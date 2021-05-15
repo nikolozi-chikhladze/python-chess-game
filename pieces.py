@@ -7,7 +7,6 @@ validNumbers = ['1', '2', '3', '4', '5', '6', '7', '8']
 
 # Validations
 def validateInputByLengthAndType(value, length, passedType):
-    print('validation: length - ', len(value), ' , type - ', type(value))
     return (len(value) == length and type(value) is passedType)
 
 def validateInputByCharactersAndNumbers(value, validCharacters = validCharacters, validNumbers = validNumbers):
@@ -147,7 +146,6 @@ def validateKingMovement(pieceName, oldPosition, newPosition):
 
 # Pawn
 def validatePawnMovement(pieceName, oldPosition, newPosition, color):
-    # print(color)
     if(
         color == 'White' and
         (oldPosition[0] == 'G')
@@ -236,23 +234,18 @@ def validatePieceMovement(pieceName, oldPosition, newPosition, color = 'White', 
             return validateKingMovement(pieceName, oldPosition, newPosition)
         elif (pieceName == 'Pawn'):
             # check if position is possible for pawn movement
-            print('moving pawn')
             return validatePawnMovement(pieceName, oldPosition, newPosition, color)
     else:
         print('Cant move in the same place')
         return False
 
 def moveHelper(checkMove, position, pieces, color, instance):
-    # print('move func')
     if (checkMove(position)):
-        # print('after check move')
         for pieceName in pieces.get(color):
             piece = pieces.get(color).get(pieceName)['instance']
-            # print('Piece found')
             if (piece == instance):
                 piece.setPosition(position)
 
-        # print('move')
         return True
     else:
         return False
@@ -297,20 +290,36 @@ def validateNewPieceInput(input):
     )
 
 def pawnPromotion(board, piece, newPosition):
-    # print('board: ', board)
-    # print('pieces: ', board.pieces)
     for pieceObject in board.pieces.get(piece.getColor()):
         if (board.pieces.get(piece.getColor()).get(pieceObject)['instance'] == piece):
             newPieceName = str(input('Enter new piece: '))
             while not validateNewPieceInput(newPieceName):
                 newPieceName = str(input('Enter new piece: '))
 
-            if (newPieceName == 'Knight' or newPieceName == 'k'):
+            if (newPieceName == 'Knight'):
                 oldPiece = board.pieces.get(piece.getColor()).get(pieceObject)
                 newKnight = Knight(oldPiece['instance'].getColor(), board, newPosition)
                 oldPiece['isAlive'] = True
                 oldPiece['instance'] = newKnight
-            
+
+            elif (newPieceName == 'Queen'):
+                oldPiece = board.pieces.get(piece.getColor()).get(pieceObject)
+                newQueen = Queen(oldPiece['instance'].getColor(), board, newPosition)
+                oldPiece['isAlive'] = True
+                oldPiece['instance'] = newQueen
+
+            elif (newPieceName == 'Bishop'):
+                oldPiece = board.pieces.get(piece.getColor()).get(pieceObject)
+                newBishop = Bishop(oldPiece['instance'].getColor(), board, newPosition)
+                oldPiece['isAlive'] = True
+                oldPiece['instance'] = newBishop
+
+            elif (newPieceName == 'Rook'):
+                oldPiece = board.pieces.get(piece.getColor()).get(pieceObject)
+                newRook = Rook(oldPiece['instance'].getColor(), board, newPosition)
+                oldPiece['isAlive'] = True
+                oldPiece['instance'] = newRook
+
     return
 
 
@@ -360,15 +369,10 @@ class Knight(Piece):
 
     def checkMove(self, dest):
         # function input validation
-        # print('dest: ', dest)
         if (validateInputByLengthAndType(dest, 2, tuple)):
-            # print('debug #1')
             if (validateInputByCharactersAndNumbers(dest)):
-                # print('debug #2')
                 if (validatePieceMovement(self.getName(), self.getPosition(), dest)):
-                    # print('debug #3')
                     # get all other pieces and check if it can kill or is blocked
-                    # print('Board pieces: ', self.board.pieces)
                     moveBlocked = blockCheckHelper(self.board.pieces, dest)
                     if (moveBlocked):
                         if (pieceKillHelper(self.board.pieces, self.getName(), self.getColor(), dest)):
@@ -393,18 +397,8 @@ class Knight(Piece):
             return blackIcons.get(self.getName())
 
     def move(self, dest):
-        # print('move func')
         return moveHelper(self.checkMove, dest, self.board.pieces, self.getColor(), self)
-        # if (self.checkMove(dest)):
-        #     for player in self.board.pieces:
-        #         for pieceName in self.board.pieces.get(player):
-        #             piece = self.board.pieces.get(player).get(pieceName)['instance']
-        #             if (piece == self):
-        #                 piece.setPosition(dest)
-
-        #     print('move')
-        # else:
-        #     return
+       
         
 class Rook(Piece):
 
@@ -438,7 +432,6 @@ class Rook(Piece):
             return blackIcons.get(self.getName())
 
     def move(self, dest):
-        # print('move func')
         return moveHelper(self.checkMove, dest, self.board.pieces, self.getColor(), self)
                 
 class Bishop(Piece):
@@ -472,7 +465,6 @@ class Bishop(Piece):
             return blackIcons.get(self.getName())
 
     def move(self, dest):
-        # print('move func')
         return moveHelper(self.checkMove, dest, self.board.pieces, self.getColor(), self)
         
 class Queen(Piece):
@@ -506,7 +498,6 @@ class Queen(Piece):
             return blackIcons.get(self.getName())
 
     def move(self, dest):
-        # print('move func')
         return moveHelper(self.checkMove, dest, self.board.pieces, self.getColor(), self)
 
 class King(Piece):
@@ -540,7 +531,6 @@ class King(Piece):
             return blackIcons.get(self.getName())
 
     def move(self, dest):
-        # print('move func')
         return moveHelper(self.checkMove, dest, self.board.pieces, self.getColor(), self)
 
 class Pawn(Piece):
@@ -552,15 +542,12 @@ class Pawn(Piece):
             if (validateInputByCharactersAndNumbers(dest)):
                 if (validatePieceMovement(self.getName(), self.getPosition(), dest, self.getColor())):
                     # get other pieces from board and check if any of them interupts movement
-                    print('piece move validation passed')
                     moveBlocked = blockCheckHelper(self.board.pieces, dest)
-                    print('move blocked: ', moveBlocked)
                     if (moveBlocked):
                         if (pieceKillHelper(self.board.pieces, self.getName(), self.getColor(), dest)):
                             return True
                         else:
                             printInvalidMovementErrorMessage(self.getName())
-                    print('Promotion condition: color - ', self.getColor(), ' , dest - ', dest)
                     if (
                         (self.getColor() == 'White') and
                         (dest[0] == 'A')
@@ -587,16 +574,5 @@ class Pawn(Piece):
             return blackIcons.get(self.getName())
 
     def move(self, dest):
-        # print('move func')
         return moveHelper(self.checkMove, dest, self.board.pieces, self.getColor(), self)
-        # if (self.checkMove(dest)):
-        #     print('after check move')
-        #     for pieceName in self.board.pieces.get(self.getColor()):
-        #         piece = self.board.pieces.get(self.getColor()).get(pieceName)['instance']
-        #         print('Piece found')
-        #         if (piece == self):
-        #             piece.setPosition(dest)
-
-        #     print('move')
-        # else:
-        #     return
+        

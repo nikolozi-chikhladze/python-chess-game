@@ -17,8 +17,6 @@ class Chess:
         if (len(moveStr) == 5):
             startPosition = moveStr[0] + moveStr[1]
             endPosition = moveStr[3] + moveStr[4]
-            # print('Start: ', startPosition)
-            # print('End: ', endPosition)
             return (startPosition, endPosition)
         else:
             printInvalidCharacterOrNumberErrorMessage()

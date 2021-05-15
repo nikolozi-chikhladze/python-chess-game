@@ -75,11 +75,11 @@ class Board:
             },
             'Black': {
                 'pawn1': {
-                    'isAlive': False,
+                    'isAlive': True,
                     'instance': Pawn('Black', self, ('B', '1'))
                 },
                 'pawn2': {
-                    'isAlive': False,
+                    'isAlive': True,
                     'instance': Pawn('Black', self, ('B', '2'))
                 },
                 'pawn3': {
@@ -107,7 +107,7 @@ class Board:
                     'instance': Pawn('Black', self, ('B', '8'))
                 },
                 'rook1': {
-                    'isAlive': False,
+                    'isAlive': True,
                     'instance': Rook('Black', self, ('A', '1'))
                 },
                 'rook2': {
@@ -160,16 +160,10 @@ class Board:
 
 
     def makeMove(self, startPosition, endPosition, player):
-        # print('player: ', player)
-        # print('pieces: ', self.pieces.get(player))
         pieces = self.pieces.get(player)
-        # print('pieces: ', pieces)
         for pieceName in pieces:
             piece = pieces.get(pieceName)['instance']
-            # print('piece position: ', piece.getPosition())
-            # print('start position: ', startPosition)
             if (piece.getPosition() == startPosition):
-                # print('Found piece: ', piece)
                 return piece.move(endPosition)
         return False
 
