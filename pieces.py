@@ -153,12 +153,11 @@ def validatePawnMovement(pieceName, oldPosition, newPosition, color):
         if(
             (validCharacters.index(newPosition[0]) == validCharacters.index(oldPosition[0]) - 1) or
             (validCharacters.index(newPosition[0]) == validCharacters.index(oldPosition[0]) - 2) or
-            (validCharacters.index(newPosition[0]) == validCharacters.index(oldPosition[0]) - 6) or
             (
                 (validCharacters.index(newPosition[0]) == validCharacters.index(oldPosition[0]) - 1) and
                 (
-                    (validCharacters.index(newPosition[1]) == validCharacters.index(oldPosition[1]) + 1) or
-                    (validCharacters.index(newPosition[1]) == validCharacters.index(oldPosition[1]) - 1)
+                    (validNumbers.index(newPosition[1]) == validNumbers.index(oldPosition[1]) + 1) or
+                    (validNumbers.index(newPosition[1]) == validNumbers.index(oldPosition[1]) - 1)
                 )
             )
         ):
@@ -264,12 +263,13 @@ def blockCheckHelper(pieces, position):
 def pieceKillMove(pieces, color, newPosition):
     for pieceObject in pieces.get(color):
         if (
-            (pieces.get('Black').get(pieceObject)['instance'].getPosition()[0] == newPosition[0]) and 
-            (pieces.get('Black').get(pieceObject)['instance'].getPosition()[1] == newPosition[1])
+            (pieces.get(color).get(pieceObject)['instance'].getPosition()[0] == newPosition[0]) and 
+            (pieces.get(color).get(pieceObject)['instance'].getPosition()[1] == newPosition[1])
         ):
             pieceToDelete = pieces.get(color).get(pieceObject)
             pieceToDelete['isAlive'] = False
             return True
+        
     return False
 
 def pieceKillHelper(pieces, pieceName, pieceColor, newPosition):
@@ -543,6 +543,14 @@ class Pawn(Piece):
                 if (validatePieceMovement(self.getName(), self.getPosition(), dest, self.getColor())):
                     # get other pieces from board and check if any of them interupts movement
                     moveBlocked = blockCheckHelper(self.board.pieces, dest)
+                    if (
+                        (validNumbers.index(dest[1]) == validNumbers.index(self.getPosition()[1]) + 1) or
+                        (validNumbers.index(dest[1]) == validNumbers.index(self.getPosition()[1]) - 1)
+                    ):
+                        if (not moveBlocked):
+                            print('Pawn cant move if not killing')
+                            return
+                    
                     if (moveBlocked):
                         if (pieceKillHelper(self.board.pieces, self.getName(), self.getColor(), dest)):
                             return True
